@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use App\Http\Middleware\AccessControl;
 
 class Kernel extends HttpKernel
 {
@@ -65,4 +66,17 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+    /**
+ * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+ */
+
+
+    protected $routeMiddleware = [
+        // ...
+        'checkrole' => \App\Http\Middleware\CheckRole::class,
+        'accesscontrol' => \App\Http\Middleware\AccessControl::class,
+
+        
+    ];
+    
 }

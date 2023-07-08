@@ -1,12 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepartmentEmployeeController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\SalaryController;
+use App\Http\Middleware\AccessControl;
+use App\Http\Middleware\CheckRole;
+use Illuminate\Support\Facades\Route;
 
-/*
+/*use App\Http\Middleware\AccessControl;
+
+// Routes accessible to unregistered users
+Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
+    // Unregistered user-specific routes for Entity A and Entity B
+});
+
+// Routes accessible to registered users
+Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
+    // Registered user-specific routes for all entities
+});
+
+// Routes accessible to editor users
+Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
+    // Editor user-specific routes for all entities
+});
+
+// Routes accessible to admin users
+Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
+    // Admin user-specific routes for all entities
+});
+
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
@@ -25,19 +48,84 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('employees', EmployeeController::class);
+// Routes accessible to user role
+Route::middleware([AccessControl::class . ':user'])->group(function () {
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('/salaries', [SalaryController::class, 'index'])->name('salaries.index');
 
-Route::resource('salaries', SalaryController::class);
+    // Disable edit routes for users
+    Route::get('/departments/{department}/edit', function () {
+        abort(403, 'Forbidden');
+    })->name('departments.edit')->middleware('checkrole:user');
+    
+    Route::get('/employees/{employee}/edit', function () {
+        abort(403, 'Forbidden');
+    })->name('employees.edit')->middleware('checkrole:user');
+    
+    Route::get('/salaries/{salary}/edit', function () {
+        abort(403, 'Forbidden');
+    })->name('salaries.edit')->middleware('checkrole:user');
 
-Route::resource('departments', DepartmentController::class);
+    // Add a hidden _method field to override PUT/PATCH methods for edit forms
+    Route::put('/departments/{department}', function () {
+        abort(403, 'Forbidden');
+    })->name('departments.update')->middleware('checkrole:user');
+    
+    Route::patch('/departments/{department}', function () {
+        abort(403, 'Forbidden');
+    })->name('departments.update')->middleware('checkrole:user');
+    
+    Route::put('/employees/{employee}', function () {
+        abort(403, 'Forbidden');
+    })->name('employees.update')->middleware('checkrole:user');
+    
+    Route::patch('/employees/{employee}', function () {
+        abort(403, 'Forbidden');
+    })->name('employees.update')->middleware('checkrole:user');
+    
+    Route::put('/salaries/{salary}', function () {
+        abort(403, 'Forbidden');
+    })->name('salaries.update')->middleware('checkrole:user');
+    
+    Route::patch('/salaries/{salary}', function () {
+        abort(403, 'Forbidden');
+    })->name('salaries.update')->middleware('checkrole:user');
+});
 
-Route::resource('departmentsemployees', DepartmentEmployeeController::class);
-Route::get('/departmentsemployees', [DepartmentEmployeeController::class, 'index'])->name('department_employee.index');
-Route::get('/departmentsemployees/create', [DepartmentEmployeeController::class, 'create'])->name('department_employee.create');
-Route::post('/departmentsemployees', [DepartmentEmployeeController::class, 'store'])->name('department_employee.store');
-Route::get('/departmentsemployees/{department_employee}/edit', [DepartmentEmployeeController::class, 'edit'])->name('department_employee.edit');
-Route::put('/departmentsemployees/{department_employee}', [DepartmentEmployeeController::class, 'update'])->name('department_employee.update');
-Route::delete('/departmentsemployees/{department_employee}', [DepartmentEmployeeController::class, 'destroy'])->name('department_employee.destroy');
 
 
-Route::get('/employee/search', [EmployeeController::class, 'search'])->name('employee.search');
+// Routes accessible to editor role
+Route::middleware([AccessControl::class . ':editor'])->group(function () {
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('/salaries', [SalaryController::class, 'index'])->name('salaries.index');
+    Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::get('/departments/{department}', [DepartmentController::class, 'show'])->name('departments.show');
+    Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+    Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+    Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
+    Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
+    Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+    Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+    Route::get('/salaries/create', [SalaryController::class, 'create'])->name('salaries.create');
+    Route::post('/salaries', [SalaryController::class, 'store'])->name('salaries.store');
+    Route::get('/salaries/{salary}', [SalaryController::class, 'show'])->name('salaries.show');
+    Route::get('/salaries/{salary}/edit', [SalaryController::class, 'edit'])->name('salaries.edit');
+    Route::put('/salaries/{salary}', [SalaryController::class, 'update'])->name('salaries.update');
+    Route::delete('/salaries/{salary}', [SalaryController::class, 'destroy'])->name('salaries.destroy');
+});
+
+// Routes accessible to admin role
+Route::middleware([AccessControl::class . ':admin'])->group(function () {
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('employees', EmployeeController::class);
+    Route::resource('salaries', SalaryController::class);
+});
+
+Route::get('/search', [SearchController::class, 'search'])->name('search');
