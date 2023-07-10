@@ -5,30 +5,9 @@ use App\Http\Controllers\DepartmentEmployeeController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Middleware\AccessControl;
-use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
-
-/*use App\Http\Middleware\AccessControl;
-
-// Routes accessible to unregistered users
-Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
-    // Unregistered user-specific routes for Entity A and Entity B
-});
-
-// Routes accessible to registered users
-Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
-    // Registered user-specific routes for all entities
-});
-
-// Routes accessible to editor users
-Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
-    // Editor user-specific routes for all entities
-});
-
-// Routes accessible to admin users
-Route::middleware([AccessControl::class . ':EntityA', AccessControl::class . ':EntityB'])->group(function () {
-    // Admin user-specific routes for all entities
-});
+use App\Http\Controllers\SearchController;
+/*
 
 |--------------------------------------------------------------------------
 | Web Routes
@@ -126,6 +105,8 @@ Route::middleware([AccessControl::class . ':admin'])->group(function () {
     Route::resource('departments', DepartmentController::class);
     Route::resource('employees', EmployeeController::class);
     Route::resource('salaries', SalaryController::class);
+    Route::resource('departmentsemployees', DepartmentEmployeeController::class);
 });
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+

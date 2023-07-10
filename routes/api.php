@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeApi;
 use App\Http\Controllers\SalaryApi;
+use App\Models\Employee;
+use App\Models\Salary;
 /*
 |--------------------------------------------------------------------------
 | API Routes

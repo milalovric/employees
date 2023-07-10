@@ -22,10 +22,12 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'Birthday' => 'required|date',
             'FirstName' => 'required|string|max:255',
             'LastName' => 'required|string|max:255',
-            'Birthday' => 'required|date',
+            'Gendrer' => 'required|string',
             'HireDate' => 'required|date',
+            
         ];
     }
 }

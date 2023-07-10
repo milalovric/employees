@@ -1,78 +1,22 @@
 <?php
-
-
-
 namespace App\Http\Controllers;
 
-
-
+use App\Models\Employee;
 use Illuminate\Http\Request;
-
-use DB;
-
-
-
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 
 class SearchController extends Controller
-
 {
+    public function search()
+    {
+        $term = request('term');
 
-   public function index()
+        // Perform the search based on the received term
+        $results = Employee::where('FirstName', 'like', '%'.$term.'%')->get(); // Modify this based on your model and search criteria
 
-{
+        return response()->json($results);
+    }
 
-return view('search.search');
-
-}
-
-
-
-public function search(Request $request)
-
-{
-
-if($request->ajax())
-
-{
-
-$output="";
-
-$employees=DB::table('employees')->where('FirstName','LIKE','%'.$request->search."%")->get();
-
-if($employees)
-
-{
-
-foreach ($employees as $key => $employee) {
-
-$output.='<tr>'.
-
-'<td>'.$employee->id.'</td>'.
-
-'<td>'.$employee->FirstName.'</td>'.
-
-'<td>'.$employee->LastName.'</td>'.
-
-'<td>'.$employee->Gender.'</td>'.
-
-'</tr>';
-
-}
-
-
-
-return Response($output);
-
-
-
-   }
-
-
-
-   }
-
-
-
-}
-
+    
 }

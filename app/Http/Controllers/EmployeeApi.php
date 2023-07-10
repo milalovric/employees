@@ -1,58 +1,50 @@
 <?php
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
+
 use App\Models\Employee;
-use Illuminate\Http\Request;
+use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Requests\StoreEmployeeRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 
 class EmployeeApi extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
-        $employee = Employee::all();
-
-
-        return response()->json($employee);
+        $employees = Employee::all();
+        return response()->json($employees);
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request): JsonResponse
     {
-        $request->validate([
-            'FirstName' => 'required',
-            'LastName' => 'required',
-            'Birthday' => 'required',
-
-        ]);
-        $employee=Employee::create($request->post());
-
-
-        return "Employee stvoren";
+        $employee = Employee::create($request->validated());
+        return response()->json(['message' => 'Employee created', 'employee' => $employee], 201);
     }
 
-    public function show($id)
+    public function show($id): JsonResponse
     {
-
-        $employee = Employee::find($id);
-        return $employee;
+        try {
+            $employee = Employee::findOrFail($id);
+            return response()->json($employee);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
     }
 
-    public function update(Request $request, Employee $employee)
+    public function update(UpdateEmployeeRequest $request, Employee $employee): JsonResponse
     {
-        $request->validate([
-            'FirstName' => 'required',
-            'LastName' => 'required',
-            'Birthday' => 'required',
-        ]);
-
-        $employee->update($request->all());
-        $employee->save();
-
-        return $employee;
+        $employee->update($request->validated());
+        return response()->json(['message' => 'Employee updated', 'employee' => $employee]);
     }
-    
-    public function destroy($id)
+
+    public function destroy($id): JsonResponse
     {
-        $employee=Employee::find($id)->delete();
-        return "Employee deleted";
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->delete();
+            return response()->json(['message' => 'Employee deleted']);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json(['message' => 'Employee not found'], 404);
+        }
     }
 }
