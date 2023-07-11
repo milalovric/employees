@@ -3,6 +3,13 @@
 @section('content')
 <div class="conteiner">
     @include ('messages')
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h1 class="mb-0">List Departments</h1>
+                <a href="{{ route('departments.create') }}" class="btn btn-primary">Add</a>
+            </div>
+            
     <table class="table">
         <thead>
           <tr>

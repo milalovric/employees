@@ -7,6 +7,7 @@ use App\Http\Controllers\SalaryController;
 use App\Http\Middleware\AccessControl;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\GoogleController;
 /*
 
 |--------------------------------------------------------------------------
@@ -109,4 +110,19 @@ Route::middleware([AccessControl::class . ':admin'])->group(function () {
 });
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+
+//OAuth
+
+Route::get('/home', function () {
+    return view('home');
+})->name('home')->middleware('auth');
+
+Route::controller(GoogleController::class)->group(function(){
+
+    Route::get('login/google', 'redirectToGoogle')->name('login.google');
+
+    Route::get('login/google/callback', 'handleGoogleCallback');
+
+});
 

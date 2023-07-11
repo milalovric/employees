@@ -29,11 +29,12 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEmployeeRequest $request)
-    {
-        Employee::create($request->validated());
-        return back()->with('success', 'Employee created successfully.');
-    }
+   
+     public function store(StoreEmployeeRequest $request)
+     {
+         Employee::create($request->validated());
+         return back()->with('success', 'Employee created successfully.');
+     }
 
     /**
      * Display the specified resource.
